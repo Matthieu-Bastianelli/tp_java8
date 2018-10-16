@@ -2,6 +2,8 @@ package java8.ex01;
 
 import java8.data.Data;
 import java8.data.Person;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -37,9 +39,22 @@ public class Lambda_01_Test {
     public void test_filter_by_age() throws Exception {
 
         List<Person> personList = Data.buildPersonList(100);
-
+        
+//==============================================================================================
+//        // Avec Classe Anonyme :
+//        PersonPredicate testPersPred = new PersonPredicate() {			
+//			@Override
+//			public boolean test(Person p) {
+//				return (p.getAge()>=18) ? true : false;
+//			}
+//		};
+//		List<Person> result = filter(personList, testPersPred);
+//
+//==============================================================================================
+        
         // TODO result ne doit contenir que des personnes adultes (age >= 18)
-        List<Person> result = filter(personList, null);
+		//Avec Lambda simplifié
+        List<Person> result = filter(personList, p -> p.getAge() >= 18);
 
         assert result.size() == 83;
 
@@ -56,7 +71,7 @@ public class Lambda_01_Test {
         List<Person> personList = Data.buildPersonList(100);
 
         // TODO result ne doit contenir que des personnes dont le prénom est "first_10"
-        List<Person> result = filter(personList, null);
+        List<Person> result = filter(personList, p -> p.getFirstname().equals("first_10"));
 
         assert result.size() == 1;
         assert result.get(0).getFirstname().equals("first_10");
@@ -72,9 +87,18 @@ public class Lambda_01_Test {
 
         String passwordSha512Hex = "ee26b0dd4af7e749aa1a8ee3c10ae9923f618980772e473f8819a5d4940e0db27ac185f8a0e1d5f84f88bc887fd67b143732c304cc5fa9ad8e6f57f50028a8ff";
 
-        // TODO result ne doit contenir que les personnes dont l'age est > 49 et dont le hash du mot de passe correspond à la valeur de la variable passwordSha512Hex
+        // TODO result ne doit contenir que les personnes dont l'age est > 49 et dont le hash
+        // du mot de passe correspond à la valeur de la variable passwordSha512Hex
         // TODO Pour obtenir le hash d'un mot, utiliser la méthode DigestUtils.sha512Hex(mot)
-        List<Person> result = filter(personList, null);
+        List<Person> result = filter(personList, p -> (p.getAge()>49) && 
+        		(DigestUtils.sha512Hex(p.getPassword()).equals(passwordSha512Hex)));
+        /**
+         * Note perso : les algorithme de codage sont récupéré grâce aux dependencies de maven :
+         * 					<groupId>commons-codec</groupId>
+         *   				<artifactId>commons-codec</artifactId>
+         *   				<version>1.10</version>
+         *   			dans le fichier pom.xml
+         */
 
         assert result.size() == 6;
         for (Person person : result) {
